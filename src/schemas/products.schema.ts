@@ -16,6 +16,10 @@ export class Product {
 
   @Prop({ required: true })
   line: string;
+
+  @Prop({ required: true })
+  marca: string;
+
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
