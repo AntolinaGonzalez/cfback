@@ -3,4 +3,5 @@ export class CreateProductDto {
   price: number;
   type: string;
   line: string;
+  marca:string;
 }
