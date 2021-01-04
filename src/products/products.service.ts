@@ -11,6 +11,7 @@ export class ProductsService {
   ) {}
 
   async newProduct(newProduct: CreateProductDto): Promise<Product> {
+    
     const product = new this.productModel(newProduct);
     return product.save();
   }
@@ -21,5 +22,10 @@ export class ProductsService {
 
   async findType(type){
     return this.productModel.find({type:type})
+  }
+
+  async editOne(id,body){
+    const product = await this.productModel.findByIdAndUpdate(id,body)
+    return product
   }
 }

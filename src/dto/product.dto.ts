@@ -4,4 +4,5 @@ export class CreateProductDto {
   type: string;
   line: string;
   marca:string;
+  imageUrl:string;
 }

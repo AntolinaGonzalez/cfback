@@ -20,6 +20,9 @@ export class Product {
   @Prop({ required: true })
   marca: string;
 
+  @Prop({ required: true })
+  imageUrl: string;
+
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

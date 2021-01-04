@@ -3,6 +3,7 @@ import * as multer from "multer";
 import * as AWS from "aws-sdk";
 import * as multerS3 from "multer-s3";
 import * as dotenv from "dotenv";
+import { Logger } from "@nestjs/common";
 
 dotenv.config();
 const s3 = new AWS.S3();
@@ -17,28 +18,24 @@ const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || "cruelty-free";
 export class UploadImageService {
   constructor() {}
 
-  async fileupload(@Req() req, @Res() res) {
-    try {
-      this.upload(req, res, function (error) {
-        if (error) {
-          console.log(error);
-          return res.status(404).json(`Failed to upload image file: ${error}`);
-        }
-        return res.status(201).json(req.files[0].location);
-      });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json(`Failed to upload image file: ${error}`);
-    }
+  async fileupload(file) {
+    const { originalname } = file;
+    return await this.upload(file.buffer, originalname);
   }
-  upload = multer({
-    storage: multerS3({
-      s3: s3,
-      bucket: AWS_S3_BUCKET_NAME,
-      acl: "public-read",
-      key: function (request, file, cb) {
-        cb(null, `${Date.now().toString()} - ${file.originalname}`);
-      },
-    }),
-  }).array("upload", 1);
+  async upload(file, name) {
+    const params = {
+      Bucket: AWS_S3_BUCKET_NAME,
+      Key: String(name),
+      Body: file,
+    };
+    return new Promise((resolve, reject) => {
+      s3.upload(params, (err, data) => {
+        if (err) {
+          Logger.error(err);
+          reject(err.message);
+        }
+        resolve(data.Location);
+      });
+    });
+  }
 }

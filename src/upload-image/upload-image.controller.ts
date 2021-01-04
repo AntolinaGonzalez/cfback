@@ -1,18 +1,16 @@
-import { UploadImageService } from './upload-image.service';
-import { Controller, Post, Req, Res } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadImageService } from "./upload-image.service";
+import { Body, Controller, Post, Req, Res, UploadedFile, UseInterceptors } from "@nestjs/common";
 
-
-@Controller('fileupload')
+@Controller("fileupload")
 export class UploadImageController {
   constructor(private readonly imageUploadService: UploadImageService) {}
+
   @Post()
-  async create(@Req() request, @Res() response) {
-    try {
-      await this.imageUploadService.fileupload(request, response);
-    } catch (error) {
-      return response
-        .status(500)
-        .json(`Failed to upload image file: ${error.message}`);
-    }
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadSingleFileWithPost(@UploadedFile() file, @Body() body) {
+    const image = await this.imageUploadService.fileupload(file)
+    console.log(typeof(image))
+    return image
   }
 }
