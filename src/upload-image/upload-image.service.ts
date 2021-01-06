@@ -25,8 +25,9 @@ export class UploadImageService {
   async upload(file, name) {
     const params = {
       Bucket: AWS_S3_BUCKET_NAME,
-      Key: String(name),
+      Key: Date.now() + String(name),
       Body: file,
+      acl: 'public-read',
     };
     return new Promise((resolve, reject) => {
       s3.upload(params, (err, data) => {
